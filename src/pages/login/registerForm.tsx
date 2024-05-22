@@ -42,11 +42,17 @@ const RegisterForm = () => {
     }
     // 默认用户名三位字符
     if(REGISTER_TYPE.USER_NAME === tabVal) {
-      if (value.length < 3) return callback('用户名最少三位字符');
+      if (value.length < 3) return callback('用户名长度最少三位');
       return callback();
     }
   }
-
+  // 密码校验
+  const passwordValidator = (value, callback) => {
+    console.log('password校验', value);
+    // TODO: 密码校验逻辑需补充
+    
+    return callback()
+  }
   // 确认密码校验
   const confirmPasswordValidator = (value, callback) => {
     if (!value || form.getFieldValue('password') !== value) {
@@ -83,7 +89,12 @@ const RegisterForm = () => {
             style={{ width: '100%' }}
           />
         </FormItem>
-        <FormItem field="password" rules={[{ required: true, message: '请输入密码' }]}>
+        <FormItem
+          field="password"
+          rules={[
+            { required: true, message: '请输入密码' },
+            { validator: passwordValidator },
+          ]}>
           <Input.Password
             normalizeTrigger={['onBlur']}
             normalize={v => v ? v.trim() : v}
@@ -103,9 +114,9 @@ const RegisterForm = () => {
             placeholder="请确认密码"
           />
         </FormItem>
-        <FormItem>
+        { password ? <FormItem>
           <StrengthCheckInput password={password} />
-        </FormItem>
+        </FormItem> : null }
         <FormItem>
           <Button type="primary" htmlType="submit" className="register-btn">注册</Button>
         </FormItem>

@@ -1,47 +1,47 @@
 import React, { useEffect, useState } from 'react';
-import { Strength } from './types'
+import zxcvbn from 'zxcvbn';
+import { Progress } from '@arco-design/web-react';
 
 const StrengthCheckInput = ({ password }) => {
-  const [strength, setStrength] = useState<Strength>('weak');
-
-  const strengthMeterColors = {
-    weak: 'red',
-    average: 'orange',
-    strong: 'green',
-  };
-
-  useEffect(() => {
-    checkPasswordStrength(password)
-  },[password])
-
-  const checkPasswordStrength = (password) => {
-    if (password.length === 0) return;
-    let strengthIndicator = 0;
-    if (password.length >= 6) strengthIndicator++;
-    if (password.match(/[a-z]+/)) strengthIndicator++;
-    if (password.match(/[0-9]+/)) strengthIndicator++;
-    if (password.match(/[A-Z]+/)) strengthIndicator++;
-    if (password.match(/[\W_]+/)) strengthIndicator++;
-
-    if (strengthIndicator <= 2) setStrength('weak');
-    if (strengthIndicator === 3) setStrength('average');
-    if (strengthIndicator > 3) setStrength('strong');
-  };
-
-
+  const [width, setWidth] = useState(0);
+  const [color, setColor] = useState('');
+  const { score } = zxcvbn(password)
   
+  useEffect(() => {
+    PasswordStr(score)
+  }, [score])
+  
+  const PasswordStr = (score) => {
+    switch (score) {
+      case 0:
+        setColor('red')
+        setWidth(20);
+        break;
+      case 1:
+        setColor('orange')
+        setWidth(40);
+        break;
+      case 2:
+        setColor('yellow')
+        setWidth(60);
+        break;
+      case 3:
+        setColor('#5cff47')
+        setWidth(80);
+        break;
+      case 4:
+        setColor('green')
+        setWidth(100);
+        break;
+      default:
+    }
+  }
+
   return (
-    <div>
-      <div
-        style={{
-          height: '10px',
-          width: '100%',
-          backgroundColor: strengthMeterColors[strength],
-        }}
-      />
-      <p>Password strength: {strength}</p>
-    </div>
+    <>
+      <Progress percent={width} color={color} showText={false} size='large' />
+    </>
   );
 };
 
-export default StrengthCheckInput;
+export default StrengthCheckInput
